@@ -1,6 +1,7 @@
 import { View, FlatList, StyleSheet } from 'react-native';
 import { Text, SearchBar } from '../ui';
 import { ProductCard, Product } from './ProductCard';
+import { AddProductCard } from './AddProductCard';
 import { theme } from '../../theme';
 
 interface ProductGridProps {
@@ -10,6 +11,7 @@ interface ProductGridProps {
     onRemoveFromCart: (productId: string) => void;
     searchQuery: string;
     onSearchChange: (query: string) => void;
+    onAddProductPress: () => void;
 }
 
 /**
@@ -22,6 +24,7 @@ export function ProductGrid({
     onRemoveFromCart,
     searchQuery,
     onSearchChange,
+    onAddProductPress,
 }: ProductGridProps) {
     return (
         <View style={styles.container}>
@@ -44,6 +47,9 @@ export function ProductGrid({
                         onRemove={() => onRemoveFromCart(item.id)}
                     />
                 )}
+                ListFooterComponent={
+                    <AddProductCard onPress={onAddProductPress} />
+                }
             />
         </View>
     );
