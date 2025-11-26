@@ -78,7 +78,11 @@ export function Analytics() {
       {/* Right column - Chart */}
       <View style={styles.chartSection}>
         <View style={styles.chartPlaceholder}>
-          <BarChart data={data} width={700} height={500} />
+          <BarChart
+            data={data}
+            width={550}
+            height={500}
+          />
         </View>
       </View>
     </View>

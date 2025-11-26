@@ -7,6 +7,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         padding: theme.spacing.base,
         gap: theme.spacing.base,
+        marginTop: theme.spacing.md,
     },
     controlsSection: {
         flex: 1,
@@ -29,6 +30,7 @@ const styles = StyleSheet.create({
         borderRadius: theme.borderRadius.base,
         borderWidth: 1,
         borderColor: theme.colors.border,
+        padding: theme.spacing.base,
     },
 });
 
