@@ -1,0 +1,354 @@
+import { useState, useEffect } from 'react';
+import { Modal, View, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import { Text, Button, Input } from '../ui';
+import { theme } from '../../theme';
+import { Product } from './ProductCard';
+
+interface EditProductModalProps {
+    visible: boolean;
+    product: Product | null;
+    onClose: () => void;
+    onUpdate: (productId: string, updates: Omit<Product, 'id' | 'image'>) => void;
+    onDelete: (productId: string) => void;
+}
+
+/**
+ * Modal for editing existing products with two-column layout
+ */
+export function EditProductModal({ visible, product, onClose, onUpdate, onDelete }: EditProductModalProps) {
+    const [name, setName] = useState('');
+    const [price, setPrice] = useState('');
+    const [stock, setStock] = useState('');
+    const [description, setDescription] = useState('');
+
+    // Update form when product changes
+    useEffect(() => {
+        if (product) {
+            setName(product.name);
+            setPrice(product.price.toString());
+            setStock(product.stock.toString());
+            setDescription(product.description);
+        }
+    }, [product]);
+
+    const handleUpdate = () => {
+        if (!product) return;
+
+        // Validate inputs
+        if (!name.trim()) {
+            alert('Please enter a product name');
+            return;
+        }
+
+        const priceNum = parseFloat(price);
+        if (isNaN(priceNum) || priceNum <= 0) {
+            alert('Please enter a valid price');
+            return;
+        }
+
+        const stockNum = parseInt(stock, 10);
+        if (isNaN(stockNum) || stockNum < 0) {
+            alert('Please enter a valid stock amount');
+            return;
+        }
+
+        // Update the product
+        onUpdate(product.id, {
+            name: name.trim(),
+            price: priceNum,
+            stock: stockNum,
+            description: description.trim() || 'No description provided',
+        });
+
+        onClose();
+    };
+
+    const handleDelete = () => {
+        if (!product) return;
+
+        // Confirm deletion
+        Alert.alert(
+            'Delete Product',
+            `Are you sure you want to delete "${product.name}"? This action cannot be undone.`,
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: () => {
+                        onDelete(product.id);
+                        onClose();
+                    },
+                },
+            ]
+        );
+    };
+
+    const handleCancel = () => {
+        onClose();
+    };
+
+    if (!product) return null;
+
+    return (
+        <Modal
+            visible={visible}
+            animationType="fade"
+            transparent
+            onRequestClose={onClose}
+        >
+            <View style={styles.overlay}>
+                <View style={styles.modalContainer}>
+                    {/* Header */}
+                    <View style={styles.header}>
+                        <Text variant="h2">Product details</Text>
+                        <TouchableOpacity onPress={handleCancel} style={styles.closeButton}>
+                            <Text variant="h3" color="secondary">✕</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Scrollable Two Column Content */}
+                    <ScrollView
+                        style={styles.scrollView}
+                        contentContainerStyle={styles.scrollContent}
+                        showsVerticalScrollIndicator={false}
+                        keyboardShouldPersistTaps="handled"
+                    >
+                        <View style={styles.content}>
+                            {/* Left Column - Photo and Description */}
+                            <View style={styles.leftColumn}>
+                                <TouchableOpacity
+                                    style={styles.updatePhotoButton}
+                                    activeOpacity={0.7}
+                                >
+                                    <Image
+                                        source={require('../../assets/icons8-camera-24.png')}
+                                        style={styles.cameraIcon}
+                                    />
+                                    <Text variant="bodySmall" semibold style={styles.updatePhotoText}>
+                                        Update photo
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.photoTile}>
+                                    <Image
+                                        source={{ uri: product.image }}
+                                        style={styles.productImage}
+                                    />
+                                </View>
+
+                                {/* Description Field */}
+                                <View style={styles.fieldContainer}>
+                                    <Text variant="label" style={styles.label}>
+                                        Description <Text variant="caption" color="tertiary">(optional)</Text>
+                                    </Text>
+                                    <Input
+                                        value={description}
+                                        onChangeText={setDescription}
+                                        placeholder="Enter product description"
+                                    />
+                                </View>
+
+                                {/* Delete Button */}
+                                <TouchableOpacity
+                                    style={styles.deleteButton}
+                                    onPress={handleDelete}
+                                    activeOpacity={0.7}
+                                >
+                                    <Image
+                                        source={require('../../assets/icons8-trash-24.png')}
+                                        style={styles.deleteIcon}
+                                    />
+                                    <Text variant="bodySmall" semibold style={styles.deleteText}>
+                                        Delete product
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            {/* Right Column - Name, Price, Stock */}
+                            <View style={styles.rightColumn}>
+                                {/* Name Field */}
+                                <View style={styles.fieldContainer}>
+                                    <Text variant="label" style={styles.label}>Product name</Text>
+                                    <Input
+                                        value={name}
+                                        onChangeText={setName}
+                                        placeholder="Enter product name"
+                                    />
+                                </View>
+
+                                {/* Price Field */}
+                                <View style={styles.fieldContainer}>
+                                    <Text variant="label" style={styles.label}>Price</Text>
+                                    <Input
+                                        value={price}
+                                        onChangeText={setPrice}
+                                        placeholder="0.00"
+                                        keyboardType="decimal-pad"
+                                    />
+                                </View>
+
+                                {/* Stock Field */}
+                                <View style={styles.fieldContainer}>
+                                    <Text variant="label" style={styles.label}>Stock quantity</Text>
+                                    <Input
+                                        value={stock}
+                                        onChangeText={setStock}
+                                        placeholder="0"
+                                        keyboardType="number-pad"
+                                    />
+                                </View>
+                            </View>
+                        </View>
+                    </ScrollView>
+
+                    {/* Fixed Footer with Action Buttons */}
+                    <View style={styles.footer}>
+                        <Button
+                            variant="outline"
+                            onPress={handleCancel}
+                            style={styles.cancelButton}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="primary"
+                            onPress={handleUpdate}
+                            style={styles.updateButton}
+                        >
+                            Update product
+                        </Button>
+                    </View>
+                </View>
+            </View>
+        </Modal>
+    );
+}
+
+const styles = StyleSheet.create({
+    overlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContainer: {
+        width: '90%',
+        height: '90%',
+        backgroundColor: theme.colors.background,
+        borderRadius: theme.borderRadius.lg,
+        ...theme.shadows.lg,
+        overflow: 'hidden',
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: theme.spacing.xl,
+        borderBottomWidth: 1,
+        borderBottomColor: theme.colors.border,
+    },
+    closeButton: {
+        padding: theme.spacing.xs,
+    },
+    scrollView: {
+        flex: 1,
+    },
+    scrollContent: {
+        padding: theme.spacing.xl,
+    },
+    content: {
+        flexDirection: 'row',
+        gap: theme.spacing.xl,
+        alignItems: 'flex-start',
+    },
+    leftColumn: {
+        flex: 1,
+    },
+    rightColumn: {
+        flex: 1,
+    },
+    updatePhotoButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'flex-start',
+        paddingHorizontal: theme.spacing.md,
+        paddingVertical: theme.spacing.xs,
+        backgroundColor: theme.colors.background,
+        borderWidth: 1,
+        borderColor: theme.colors.primary,
+        borderRadius: theme.borderRadius.base,
+        marginBottom: theme.spacing.sm,
+        gap: theme.spacing.xs,
+    },
+    cameraIcon: {
+        width: 20,
+        height: 20,
+        tintColor: theme.colors.primary,
+    },
+    updatePhotoText: {
+        color: theme.colors.primary,
+        fontSize: theme.typography.fontSize.sm,
+    },
+    photoTile: {
+        height: 125,
+        backgroundColor: theme.colors.surface,
+        borderRadius: theme.borderRadius.base,
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: theme.spacing.xl,
+        overflow: 'hidden',
+    },
+    productImage: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain',
+    },
+    fieldContainer: {
+        marginBottom: theme.spacing.md,
+    },
+    label: {
+        marginBottom: theme.spacing.xs,
+        color: theme.colors.text.primary,
+    },
+    deleteButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: theme.spacing.md,
+        borderRadius: theme.borderRadius.base,
+        borderWidth: 1,
+        borderColor: theme.colors.error,
+        backgroundColor: 'transparent',
+        marginTop: theme.spacing.md,
+        gap: theme.spacing.sm,
+    },
+    deleteIcon: {
+        width: 20,
+        height: 20,
+        tintColor: theme.colors.error,
+    },
+    deleteText: {
+        color: theme.colors.error,
+    },
+    footer: {
+        flexDirection: 'row',
+        padding: theme.spacing.xl,
+        borderTopWidth: 1,
+        borderTopColor: theme.colors.border,
+        gap: theme.spacing.md,
+        backgroundColor: theme.colors.background,
+    },
+    cancelButton: {
+        flex: 1,
+        borderColor: theme.colors.error,
+    },
+    updateButton: {
+        flex: 2,
+    },
+});
