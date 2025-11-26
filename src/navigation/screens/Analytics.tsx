@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Text, Dropdown, DropdownOption } from '../../components/ui';
 import styles from '../../styles/analytics';
+import { BarChart } from 'react-native-gifted-charts';
 
 // Dropdown options
 const PRODUCT_OPTIONS: DropdownOption[] = [
@@ -32,6 +33,8 @@ const TIME_PERIOD_OPTIONS: DropdownOption[] = [
   { label: 'Last 30 days', value: 'last30days' },
   { label: 'Last 90 days', value: 'last90days' },
 ];
+
+const data = [{ value: 50 }, { value: 80 }, { value: 90 }, { value: 70 }]
 
 export function Analytics() {
   const [selectedProduct, setSelectedProduct] = useState('product1');
@@ -75,9 +78,7 @@ export function Analytics() {
       {/* Right column - Chart */}
       <View style={styles.chartSection}>
         <View style={styles.chartPlaceholder}>
-          <Text variant="body" color="tertiary">
-            Chart will be displayed here
-          </Text>
+          <BarChart data={data} width={700} height={500} />
         </View>
       </View>
     </View>
