@@ -7,11 +7,11 @@ import * as React from 'react';
 import { useColorScheme } from 'react-native';
 import { Navigation } from './navigation';
 
-Asset.loadAsync([
-  ...NavigationAssets,
-  require('./assets/newspaper.png'),
-  require('./assets/bell.png'),
-]);
+// Asset.loadAsync([
+//   ...NavigationAssets,
+//   require('./assets/newspaper.png'),
+//   require('./assets/bell.png'),
+// ]);
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,7 +20,7 @@ const prefix = createURL('/');
 export function App() {
   const colorScheme = useColorScheme();
 
-  const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme
+  const theme = DefaultTheme;
 
   return (
     <Navigation
