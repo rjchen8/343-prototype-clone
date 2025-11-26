@@ -4,8 +4,8 @@ import {
   StaticParamList,
 } from '@react-navigation/native';
 import { Image } from 'react-native';
-import cart from '../assets/cart-shopping-svgrepo-com.svg';
-import graph from '../assets/graph-up-svgrepo-com.svg';
+import cart from '../assets/icons8-cart-24.png';
+import graph from '../assets/icons8-graph-24.png';
 import { Home } from './screens/Home';
 import { Analytics } from './screens/Analytics';
 
