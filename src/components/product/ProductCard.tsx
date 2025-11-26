@@ -43,11 +43,15 @@ export function ProductCard({ product, quantity, onAdd, onRemove }: ProductCardP
 
             <View style={styles.controls}>
                 <TouchableOpacity
-                    style={styles.controlButton}
+                    style={[
+                        styles.controlButton,
+                        styles.removeButton,
+                        quantity === 0 && styles.removeButtonDisabled
+                    ]}
                     onPress={onRemove}
                     disabled={quantity === 0}
                 >
-                    <Text color="inverse" bold>-</Text>
+                    <Text style={styles.removeButtonText} bold>-</Text>
                 </TouchableOpacity>
 
                 <Text variant="body" semibold style={styles.quantity}>
@@ -120,6 +124,18 @@ const styles = StyleSheet.create({
         borderRadius: theme.borderRadius.full,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    removeButton: {
+        backgroundColor: 'transparent',
+        borderWidth: 1,
+        borderColor: theme.colors.error,
+    },
+    removeButtonText: {
+        color: theme.colors.text.secondary,
+    },
+    removeButtonDisabled: {
+        borderColor: theme.colors.border,
+        opacity: 0.5,
     },
     controlButtonDisabled: {
         backgroundColor: theme.colors.text.tertiary,

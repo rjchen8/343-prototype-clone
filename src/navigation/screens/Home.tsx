@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ProductGrid } from '../../components/product/ProductGrid';
 import { CartSummary, CartItem } from '../../components/cart/CartSummary';
+import { SuccessModal } from '../../components/cart/SuccessModal';
 import { Product } from '../../components/product/ProductCard';
 import { AddProductModal } from '../../components/product/AddProductModal';
 import { theme } from '../../theme';
@@ -23,6 +24,7 @@ export function Home() {
   const [cart, setCart] = useState<Record<string, CartItem>>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
 
   // Filter products based on search query
   const filteredProducts = useMemo(() => {
@@ -69,6 +71,14 @@ export function Home() {
     });
   };
 
+  const removeItemCompletely = (productId: string) => {
+    setCart(prev => {
+      const newCart = { ...prev };
+      delete newCart[productId];
+      return newCart;
+    });
+  };
+
   const handleAddProduct = (productData: Omit<Product, 'id' | 'image'>) => {
     const newProduct: Product = {
       ...productData,
@@ -76,6 +86,30 @@ export function Home() {
       image: 'https://placehold.co/125/png', // Default placeholder image
     };
     setProducts(prev => [...prev, newProduct]);
+  };
+
+  const handleCancel = () => {
+    setCart({});
+  };
+
+  const handleCheckout = () => {
+    // Reduce stock for each item in cart
+    setProducts(prev => prev.map(product => {
+      const cartItem = cart[product.id];
+      if (cartItem) {
+        return {
+          ...product,
+          stock: product.stock - cartItem.quantity
+        };
+      }
+      return product;
+    }));
+
+    // Clear cart
+    setCart({});
+
+    // Show success modal
+    setIsSuccessModalVisible(true);
   };
 
   const cartItems = Object.values(cart);
@@ -91,12 +125,22 @@ export function Home() {
         onSearchChange={setSearchQuery}
         onAddProductPress={() => setIsModalVisible(true)}
       />
-      <CartSummary items={cartItems} />
+      <CartSummary
+        items={cartItems}
+        onCancel={handleCancel}
+        onCheckout={handleCheckout}
+        onRemoveItem={removeItemCompletely}
+      />
 
       <AddProductModal
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
         onAdd={handleAddProduct}
+      />
+
+      <SuccessModal
+        visible={isSuccessModalVisible}
+        onClose={() => setIsSuccessModalVisible(false)}
       />
     </View>
   );

@@ -1,5 +1,5 @@
-import { View, ScrollView, StyleSheet } from 'react-native';
-import { Text } from '../ui';
+import { View, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { Text, Button } from '../ui';
 import { theme } from '../../theme';
 
 export type CartItem = {
@@ -11,13 +11,17 @@ export type CartItem = {
 
 interface CartSummaryProps {
     items: CartItem[];
+    onCancel?: () => void;
+    onCheckout?: () => void;
+    onRemoveItem?: (itemId: string) => void;
 }
 
 /**
  * Cart summary component showing cart items and total
  */
-export function CartSummary({ items }: CartSummaryProps) {
+export function CartSummary({ items, onCancel, onCheckout, onRemoveItem }: CartSummaryProps) {
     const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const hasItems = items.length > 0;
 
     return (
         <View style={styles.container}>
@@ -37,9 +41,21 @@ export function CartSummary({ items }: CartSummaryProps) {
                             <Text variant="bodySmall" color="secondary" style={styles.itemQuantity}>
                                 x{item.quantity}
                             </Text>
-                            <Text variant="bodySmall" semibold>
+                            <Text variant="bodySmall" semibold style={styles.itemPrice}>
                                 ${(item.price * item.quantity).toFixed(2)}
                             </Text>
+                            {onRemoveItem && (
+                                <TouchableOpacity
+                                    style={styles.trashButton}
+                                    onPress={() => onRemoveItem(item.id)}
+                                    activeOpacity={1}
+                                >
+                                    <Image
+                                        source={require('../../assets/icons8-trash-24.png')}
+                                        style={styles.trashIcon}
+                                    />
+                                </TouchableOpacity>
+                            )}
                         </View>
                     ))
                 )}
@@ -50,6 +66,27 @@ export function CartSummary({ items }: CartSummaryProps) {
                 <Text variant="h3" style={styles.totalAmount}>
                     ${total.toFixed(2)}
                 </Text>
+            </View>
+
+            <View style={styles.buttonSection}>
+                <Button
+                    variant="outline"
+                    size="md"
+                    onPress={onCancel}
+                    disabled={!hasItems}
+                    style={[styles.button, hasItems && styles.cancelButton]}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    variant="primary"
+                    size="md"
+                    onPress={onCheckout}
+                    disabled={!hasItems}
+                    style={styles.button}
+                >
+                    Checkout
+                </Button>
             </View>
         </View>
     );
@@ -85,6 +122,18 @@ const styles = StyleSheet.create({
     itemQuantity: {
         marginHorizontal: theme.spacing.md,
     },
+    itemPrice: {
+        marginRight: theme.spacing.sm,
+    },
+    trashButton: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    trashIcon: {
+        width: 24,
+        height: 24,
+        tintColor: theme.colors.text.tertiary,
+    },
     totalSection: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -95,5 +144,17 @@ const styles = StyleSheet.create({
     },
     totalAmount: {
         color: theme.colors.primary,
+    },
+    buttonSection: {
+        flexDirection: 'row',
+        gap: theme.spacing.sm,
+        marginTop: theme.spacing.base,
+    },
+    button: {
+        flex: 1,
+    },
+    cancelButton: {
+        borderColor: theme.colors.error,
+        color: theme.colors.error,
     },
 });
