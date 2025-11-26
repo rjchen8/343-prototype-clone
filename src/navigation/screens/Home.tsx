@@ -7,15 +7,15 @@ import { theme } from '../../theme';
 
 // Sample product data
 const PRODUCTS: Product[] = [
-  { id: '1', name: 'Product 1', price: 10.99, image: 'https://via.placeholder.com/150', stock: 10 },
-  { id: '2', name: 'Product 2', price: 15.99, image: 'https://via.placeholder.com/150', stock: 5 },
-  { id: '3', name: 'Product 3', price: 8.99, image: 'https://via.placeholder.com/150', stock: 15 },
-  { id: '4', name: 'Product 4', price: 12.99, image: 'https://via.placeholder.com/150', stock: 3 },
-  { id: '5', name: 'Product 5', price: 20.99, image: 'https://via.placeholder.com/150', stock: 8 },
-  { id: '6', name: 'Product 6', price: 18.99, image: 'https://via.placeholder.com/150', stock: 12 },
-  { id: '7', name: 'Product 7', price: 25.99, image: 'https://via.placeholder.com/150', stock: 2 },
-  { id: '8', name: 'Product 8', price: 14.99, image: 'https://via.placeholder.com/150', stock: 20 },
-  { id: '9', name: 'Product 9', price: 14.99, image: 'https://via.placeholder.com/150', stock: 7 },
+  { id: '1', name: 'Product 1', price: 10.99, image: 'https://via.placeholder.com/150', stock: 10, description: "placeholder" },
+  { id: '2', name: 'Product 2', price: 15.99, image: 'https://via.placeholder.com/150', stock: 5, description: "placeholder" },
+  { id: '3', name: 'Product 3', price: 8.99, image: 'https://via.placeholder.com/150', stock: 15, description: "placeholder" },
+  { id: '4', name: 'Product 4', price: 12.99, image: 'https://via.placeholder.com/150', stock: 3, description: "placeholder" },
+  { id: '5', name: 'Product 5', price: 20.99, image: 'https://via.placeholder.com/150', stock: 8, description: "placeholder" },
+  { id: '6', name: 'Product 6', price: 18.99, image: 'https://via.placeholder.com/150', stock: 12, description: "placeholder" },
+  { id: '7', name: 'Product 7', price: 25.99, image: 'https://via.placeholder.com/150', stock: 2, description: "placeholder" },
+  { id: '8', name: 'Product 8', price: 14.99, image: 'https://via.placeholder.com/150', stock: 20, description: "placeholder" },
+  { id: '9', name: 'Product 9', price: 14.99, image: 'https://via.placeholder.com/150', stock: 7, description: "placeholder" },
 ];
 
 export function Home() {

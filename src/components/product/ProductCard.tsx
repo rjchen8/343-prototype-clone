@@ -8,6 +8,7 @@ export type Product = {
     price: number;
     image: string;
     stock: number;
+    description: string;
 };
 
 interface ProductCardProps {
