@@ -261,6 +261,7 @@ const styles = StyleSheet.create({
     },
     cancelButton: {
         flex: 1,
+        borderColor: theme.colors.error,
     },
     addButton: {
         flex: 2,

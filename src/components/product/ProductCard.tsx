@@ -16,16 +16,31 @@ interface ProductCardProps {
     quantity: number;
     onAdd: () => void;
     onRemove: () => void;
+    onInfo?: () => void;
 }
 
 /**
  * Product card component displaying product info and quantity controls
  */
-export function ProductCard({ product, quantity, onAdd, onRemove }: ProductCardProps) {
+export function ProductCard({ product, quantity, onAdd, onRemove, onInfo }: ProductCardProps) {
     const isOutOfStock = quantity >= product.stock;
 
     return (
         <View style={styles.card}>
+            {/* Info button in top-left corner */}
+            {onInfo && (
+                <TouchableOpacity
+                    style={styles.infoButton}
+                    onPress={onInfo}
+                    activeOpacity={0.7}
+                >
+                    <Image
+                        source={require('../../assets/icons8-info-24.png')}
+                        style={styles.infoIcon}
+                    />
+                </TouchableOpacity>
+            )}
+
             {/* Stock badge in top-right corner */}
             <View style={styles.stockBadge}>
                 <Text variant="caption" color="secondary" semibold>
@@ -102,6 +117,22 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: theme.colors.border,
         zIndex: 1,
+    },
+    infoButton: {
+        position: 'absolute',
+        top: theme.spacing.xs,
+        left: theme.spacing.xs,
+        backgroundColor: theme.colors.background,
+        padding: 2,
+        borderRadius: theme.borderRadius.sm,
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+        zIndex: 1,
+    },
+    infoIcon: {
+        width: 20,
+        height: 20,
+        tintColor: theme.colors.primary,
     },
     image: {
         width: 100,

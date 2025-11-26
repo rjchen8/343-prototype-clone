@@ -5,6 +5,7 @@ import { CartSummary, CartItem } from '../../components/cart/CartSummary';
 import { SuccessModal } from '../../components/cart/SuccessModal';
 import { Product } from '../../components/product/ProductCard';
 import { AddProductModal } from '../../components/product/AddProductModal';
+import { EditProductModal } from '../../components/product/EditProductModal';
 import { theme } from '../../theme';
 
 // Initial product data
@@ -25,6 +26,8 @@ export function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   // Filter products based on search query
   const filteredProducts = useMemo(() => {
@@ -88,6 +91,27 @@ export function Home() {
     setProducts(prev => [...prev, newProduct]);
   };
 
+  const handleEditProduct = (product: Product) => {
+    setSelectedProduct(product);
+    setIsEditModalVisible(true);
+  };
+
+  const handleUpdateProduct = (productId: string, updates: Omit<Product, 'id' | 'image'>) => {
+    setProducts(prev => prev.map(product =>
+      product.id === productId
+        ? { ...product, ...updates }
+        : product
+    ));
+  };
+
+  const handleDeleteProduct = (productId: string) => {
+    // Remove from products list
+    setProducts(prev => prev.filter(product => product.id !== productId));
+
+    // Remove from cart if present
+    removeItemCompletely(productId);
+  };
+
   const handleCancel = () => {
     setCart({});
   };
@@ -124,6 +148,7 @@ export function Home() {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onAddProductPress={() => setIsModalVisible(true)}
+        onEditProduct={handleEditProduct}
       />
       <CartSummary
         items={cartItems}
@@ -136,6 +161,17 @@ export function Home() {
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
         onAdd={handleAddProduct}
+      />
+
+      <EditProductModal
+        visible={isEditModalVisible}
+        product={selectedProduct}
+        onClose={() => {
+          setIsEditModalVisible(false);
+          setSelectedProduct(null);
+        }}
+        onUpdate={handleUpdateProduct}
+        onDelete={handleDeleteProduct}
       />
 
       <SuccessModal
