@@ -188,5 +188,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: theme.spacing.base,
     gap: theme.spacing.base,
+    marginTop: theme.spacing.md,
   },
 });

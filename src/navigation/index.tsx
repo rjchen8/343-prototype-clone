@@ -11,6 +11,7 @@ import { Analytics } from './screens/Analytics';
 
 const HomeTabs = createBottomTabNavigator({
   screenOptions: {
+    headerShown: false,
     tabBarPosition: "left",
     tabBarVariant: "material",
     tabBarLabelPosition: "below-icon",
