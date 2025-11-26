@@ -10,6 +10,11 @@ import { Home } from './screens/Home';
 import { Analytics } from './screens/Analytics';
 
 const HomeTabs = createBottomTabNavigator({
+  screenOptions: {
+    tabBarPosition: "left",
+    tabBarVariant: "material",
+    tabBarLabelPosition: "below-icon",
+  },
   screens: {
     Home: {
       screen: Home,
