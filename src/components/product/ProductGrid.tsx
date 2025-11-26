@@ -1,5 +1,5 @@
 import { View, FlatList, StyleSheet } from 'react-native';
-import { Text } from '../ui';
+import { Text, SearchBar } from '../ui';
 import { ProductCard, Product } from './ProductCard';
 import { theme } from '../../theme';
 
@@ -8,15 +8,29 @@ interface ProductGridProps {
     cart: Record<string, { quantity: number }>;
     onAddToCart: (product: Product) => void;
     onRemoveFromCart: (productId: string) => void;
+    searchQuery: string;
+    onSearchChange: (query: string) => void;
 }
 
 /**
- * Grid layout for displaying products
+ * Grid layout for displaying products with search functionality
  */
-export function ProductGrid({ products, cart, onAddToCart, onRemoveFromCart }: ProductGridProps) {
+export function ProductGrid({
+    products,
+    cart,
+    onAddToCart,
+    onRemoveFromCart,
+    searchQuery,
+    onSearchChange,
+}: ProductGridProps) {
     return (
         <View style={styles.container}>
             <Text variant="h2" style={styles.title}>Catalog</Text>
+            <SearchBar
+                value={searchQuery}
+                onChangeText={onSearchChange}
+                placeholder="Search products..."
+            />
             <FlatList
                 data={products}
                 keyExtractor={item => item.id}
