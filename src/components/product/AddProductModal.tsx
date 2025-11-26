@@ -74,7 +74,7 @@ export function AddProductModal({ visible, onClose, onAdd }: AddProductModalProp
                 <View style={styles.modalContainer}>
                     {/* Header */}
                     <View style={styles.header}>
-                        <Text variant="h2">Add New Product</Text>
+                        <Text variant="h2">Add new product</Text>
                         <TouchableOpacity onPress={handleCancel} style={styles.closeButton}>
                             <Text variant="h3" color="secondary">✕</Text>
                         </TouchableOpacity>
@@ -116,7 +116,7 @@ export function AddProductModal({ visible, onClose, onAdd }: AddProductModalProp
                             <View style={styles.rightColumn}>
                                 {/* Name Field */}
                                 <View style={styles.fieldContainer}>
-                                    <Text variant="label" style={styles.label}>Product Name</Text>
+                                    <Text variant="label" style={styles.label}>Product name</Text>
                                     <Input
                                         value={name}
                                         onChangeText={setName}
@@ -137,7 +137,7 @@ export function AddProductModal({ visible, onClose, onAdd }: AddProductModalProp
 
                                 {/* Stock Field */}
                                 <View style={styles.fieldContainer}>
-                                    <Text variant="label" style={styles.label}>Stock Quantity</Text>
+                                    <Text variant="label" style={styles.label}>Stock quantity</Text>
                                     <Input
                                         value={stock}
                                         onChangeText={setStock}
@@ -163,7 +163,7 @@ export function AddProductModal({ visible, onClose, onAdd }: AddProductModalProp
                             onPress={handleSubmit}
                             style={styles.addButton}
                         >
-                            Add Product
+                            Add product
                         </Button>
                     </View>
                 </View>

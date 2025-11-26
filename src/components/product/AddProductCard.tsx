@@ -16,7 +16,7 @@ export function AddProductCard({ onPress }: AddProductCardProps) {
                 <Text style={styles.plusIcon}>+</Text>
             </View>
             <Text variant="bodySmall" semibold style={styles.text}>
-                Add Product
+                Add product
             </Text>
         </TouchableOpacity>
     );
