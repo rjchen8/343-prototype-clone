@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Modal, View, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { Text, Button, Input } from '../ui';
 import { theme } from '../../theme';
 import { Product } from './ProductCard';
@@ -8,7 +9,7 @@ interface EditProductModalProps {
     visible: boolean;
     product: Product | null;
     onClose: () => void;
-    onUpdate: (productId: string, updates: Omit<Product, 'id' | 'image'>) => void;
+    onUpdate: (productId: string, updates: Omit<Product, 'id'>) => void;
     onDelete: (productId: string) => void;
 }
 
@@ -20,6 +21,7 @@ export function EditProductModal({ visible, product, onClose, onUpdate, onDelete
     const [price, setPrice] = useState('');
     const [stock, setStock] = useState('');
     const [description, setDescription] = useState('');
+    const [photo, setPhoto] = useState<string | null>(null);
 
     // Update form when product changes
     useEffect(() => {
@@ -28,6 +30,7 @@ export function EditProductModal({ visible, product, onClose, onUpdate, onDelete
             setPrice(product.price.toString());
             setStock(product.stock.toString());
             setDescription(product.description);
+            setPhoto(product.image);
         }
     }, [product]);
 
@@ -58,6 +61,7 @@ export function EditProductModal({ visible, product, onClose, onUpdate, onDelete
             price: priceNum,
             stock: stockNum,
             description: description.trim() || 'No description provided',
+            image: photo || product.image,
         });
 
         onClose();
@@ -85,6 +89,23 @@ export function EditProductModal({ visible, product, onClose, onUpdate, onDelete
                 },
             ]
         );
+    };
+
+    const handlePickPhoto = async () => {
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: "images",
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.8,
+            });
+
+            if (!result.canceled) {
+                setPhoto(result.assets[0].uri);
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Failed to pick image');
+        }
     };
 
     const handleCancel = () => {
@@ -123,6 +144,7 @@ export function EditProductModal({ visible, product, onClose, onUpdate, onDelete
                                 <TouchableOpacity
                                     style={styles.updatePhotoButton}
                                     activeOpacity={0.7}
+                                    onPress={handlePickPhoto}
                                 >
                                     <Image
                                         source={require('../../assets/icons8-camera-24.png')}
@@ -135,7 +157,7 @@ export function EditProductModal({ visible, product, onClose, onUpdate, onDelete
 
                                 <View style={styles.photoTile}>
                                     <Image
-                                        source={{ uri: product.image }}
+                                        source={{ uri: photo || product.image }}
                                         style={styles.productImage}
                                     />
                                 </View>

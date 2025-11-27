@@ -82,11 +82,10 @@ export function Home() {
     });
   };
 
-  const handleAddProduct = (productData: Omit<Product, 'id' | 'image'>) => {
+  const handleAddProduct = (productData: Omit<Product, 'id'>) => {
     const newProduct: Product = {
       ...productData,
       id: Date.now().toString(), // Simple ID generation
-      image: 'https://placehold.co/125/png', // Default placeholder image
     };
     setProducts(prev => [...prev, newProduct]);
   };
@@ -96,7 +95,7 @@ export function Home() {
     setIsEditModalVisible(true);
   };
 
-  const handleUpdateProduct = (productId: string, updates: Omit<Product, 'id' | 'image'>) => {
+  const handleUpdateProduct = (productId: string, updates: Omit<Product, 'id'>) => {
     setProducts(prev => prev.map(product =>
       product.id === productId
         ? { ...product, ...updates }
