@@ -88,6 +88,28 @@ const styles = StyleSheet.create({
         fontSize: theme.typography.fontSize.base,
         fontWeight: '600',
     },
+    exportButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: theme.colors.primary,
+        paddingVertical: theme.spacing.base,
+        paddingHorizontal: theme.spacing.base,
+        borderRadius: theme.borderRadius.base,
+        marginTop: 'auto',
+        marginBottom: theme.spacing.base,
+        gap: theme.spacing.xs,
+    },
+    exportButtonText: {
+        color: '#FFFFFF',
+        fontSize: theme.typography.fontSize.base,
+        fontWeight: '600',
+    },
+    exportIcon: {
+        width: 24,
+        height: 24,
+        tintColor: '#FFFFFF',
+    },
 });
 
 export default styles;

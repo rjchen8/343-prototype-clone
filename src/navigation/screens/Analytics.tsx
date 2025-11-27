@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Platform, Modal } from 'react-native';
+import { View, TouchableOpacity, Platform, Modal, Image } from 'react-native';
 import { Text, Dropdown, DropdownOption } from '../../components/ui';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import styles from '../../styles/analytics';
@@ -179,6 +179,14 @@ export function Analytics() {
             </Text>
           </TouchableOpacity>
         </View>
+
+        <TouchableOpacity style={styles.exportButton}>
+          <Text style={styles.exportButtonText}>Export to CSV</Text>
+          <Image
+            source={require('../../assets/icons8-export-24.png')}
+            style={styles.exportIcon}
+          />
+        </TouchableOpacity>
       </View>
 
       {/* Right column - Chart */}
