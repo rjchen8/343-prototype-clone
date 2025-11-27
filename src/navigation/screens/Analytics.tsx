@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, TouchableOpacity, Platform, Modal } from 'react-native';
 import { Text, Dropdown, DropdownOption } from '../../components/ui';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import styles from '../../styles/analytics';
 import { BarChart, LineChart } from 'react-native-gifted-charts';
 import { theme } from '../../theme';
@@ -24,16 +25,6 @@ const DURATION_OPTIONS: DropdownOption[] = [
   { label: '1 day', value: '1day' },
   { label: '1 week', value: '1week' },
   { label: '1 year', value: '1year' },
-];
-
-const TIME_PERIOD_OPTIONS: DropdownOption[] = [
-  { label: 'Today', value: 'today' },
-  { label: 'This week', value: 'thisweek' },
-  { label: 'This month', value: 'thismonth' },
-  { label: 'This year', value: 'thisyear' },
-  { label: 'Last 7 days', value: 'last7days' },
-  { label: 'Last 30 days', value: 'last30days' },
-  { label: 'Last 90 days', value: 'last90days' },
 ];
 
 // Mock data for 1 day (24 hours) - labels every 3 hours
@@ -95,7 +86,8 @@ export function Analytics() {
   const [selectedProduct, setSelectedProduct] = useState('product1');
   const [selectedGraphType, setSelectedGraphType] = useState('bar');
   const [selectedDuration, setSelectedDuration] = useState('1week');
-  const [selectedTimePeriod, setSelectedTimePeriod] = useState('thisweek');
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   // Select the appropriate data based on duration
   const getChartData = () => {
@@ -114,8 +106,39 @@ export function Analytics() {
   // Get chart title based on selected options
   const getChartTitle = () => {
     const productLabel = PRODUCT_OPTIONS.find(p => p.value === selectedProduct)?.label || 'Product';
-    const timePeriodLabel = TIME_PERIOD_OPTIONS.find(t => t.value === selectedTimePeriod)?.label || 'Time Period';
-    return `${productLabel} - Sales from ${timePeriodLabel.toLowerCase()}`;
+
+    const formatDate = (date: Date): string => {
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${month}/${day}/${year}`;
+    };
+
+    let dateLabel = '';
+    if (selectedDuration === '1day') {
+      dateLabel = formatDate(selectedDate);
+    } else if (selectedDuration === '1week') {
+      const endDate = new Date(selectedDate);
+      endDate.setDate(endDate.getDate() + 6);
+      dateLabel = `${formatDate(selectedDate)} - ${formatDate(endDate)}`;
+    } else if (selectedDuration === '1year') {
+      dateLabel = `${selectedDate.getFullYear()}`;
+    }
+
+    return `${productLabel} - Sales from ${dateLabel}`;
+  };
+
+  const formatDisplayDate = (date: Date): string => {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  };
+
+  const handleDateChange = (event: any, date?: Date) => {
+    if (date) {
+      setSelectedDate(date);
+    }
   };
 
   return (
@@ -143,12 +166,19 @@ export function Analytics() {
           onValueChange={setSelectedDuration}
         />
 
-        <Dropdown
-          label="Time Period"
-          value={selectedTimePeriod}
-          options={TIME_PERIOD_OPTIONS}
-          onValueChange={setSelectedTimePeriod}
-        />
+        <View style={styles.datePickerContainer}>
+          <Text style={styles.datePickerLabel}>
+            {selectedDuration === '1day' ? 'Date' : 'Start Date'}
+          </Text>
+          <TouchableOpacity
+            style={styles.dateButton}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Text style={styles.dateText}>
+              {formatDisplayDate(selectedDate)}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Right column - Chart */}
@@ -181,6 +211,37 @@ export function Analytics() {
           )}
         </View>
       </View>
+
+      {/* Date Picker Modal - centered on screen */}
+      <Modal
+        visible={showDatePicker}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowDatePicker(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.pickerContainer}>
+            <Text variant="h3" style={styles.modalTitle}>
+              {selectedDuration === '1day' ? 'Select Date' : 'Select Start Date'}
+            </Text>
+
+            <DateTimePicker
+              value={selectedDate}
+              mode="date"
+              display="spinner"
+              onChange={handleDateChange}
+              textColor={theme.colors.text.primary}
+            />
+
+            <TouchableOpacity
+              style={styles.doneButton}
+              onPress={() => setShowDatePicker(false)}
+            >
+              <Text style={styles.doneButtonText}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
