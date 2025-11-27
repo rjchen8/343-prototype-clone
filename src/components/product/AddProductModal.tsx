@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Modal, View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Modal, View, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { Text, Button, Input } from '../ui';
 import { theme } from '../../theme';
 import { Product } from './ProductCard';
@@ -7,7 +8,7 @@ import { Product } from './ProductCard';
 interface AddProductModalProps {
     visible: boolean;
     onClose: () => void;
-    onAdd: (product: Omit<Product, 'id' | 'image'>) => void;
+    onAdd: (product: Omit<Product, 'id'>) => void;
 }
 
 /**
@@ -18,6 +19,7 @@ export function AddProductModal({ visible, onClose, onAdd }: AddProductModalProp
     const [price, setPrice] = useState('');
     const [stock, setStock] = useState('');
     const [description, setDescription] = useState('');
+    const [photo, setPhoto] = useState<string | null>(null);
 
     const handleSubmit = () => {
         // Validate inputs
@@ -38,12 +40,18 @@ export function AddProductModal({ visible, onClose, onAdd }: AddProductModalProp
             return;
         }
 
+        if (!photo) {
+            alert('Please add a photo');
+            return;
+        }
+
         // Add the product
         onAdd({
             name: name.trim(),
             price: priceNum,
             stock: stockNum,
             description: description.trim() || 'No description provided',
+            image: photo,
         });
 
         // Reset form
@@ -56,6 +64,24 @@ export function AddProductModal({ visible, onClose, onAdd }: AddProductModalProp
         setPrice('');
         setStock('');
         setDescription('');
+        setPhoto(null);
+    };
+
+    const handlePickPhoto = async () => {
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.8,
+            });
+
+            if (!result.canceled) {
+                setPhoto(result.assets[0].uri);
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Failed to pick image');
+        }
     };
 
     const handleCancel = () => {
@@ -90,13 +116,23 @@ export function AddProductModal({ visible, onClose, onAdd }: AddProductModalProp
                         <View style={styles.content}>
                             {/* Left Column - Photo and Description */}
                             <View style={styles.leftColumn}>
-                                <TouchableOpacity style={styles.photoTile} activeOpacity={0.7}>
-                                    <View style={styles.photoIconContainer}>
-                                        <Text style={styles.photoIcon}>+</Text>
-                                    </View>
-                                    <Text variant="bodySmall" color="secondary" style={styles.photoText}>
-                                        Add photo of item
-                                    </Text>
+                                <TouchableOpacity 
+                                    style={styles.photoTile} 
+                                    activeOpacity={0.7}
+                                    onPress={handlePickPhoto}
+                                >
+                                    {photo ? (
+                                        <Image source={{ uri: photo }} style={styles.photoImage} />
+                                    ) : (
+                                        <>
+                                            <View style={styles.photoIconContainer}>
+                                                <Text style={styles.photoIcon}>+</Text>
+                                            </View>
+                                            <Text variant="bodySmall" color="secondary" style={styles.photoText}>
+                                                Add photo of item
+                                            </Text>
+                                        </>
+                                    )}
                                 </TouchableOpacity>
 
                                 {/* Description Field */}
@@ -225,6 +261,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: theme.spacing.xl,
+        overflow: 'hidden',
+    },
+    photoImage: {
+        width: '100%',
+        height: '100%',
+        borderRadius: theme.borderRadius.base,
     },
     photoIconContainer: {
         width: 80,
