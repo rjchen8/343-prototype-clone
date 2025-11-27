@@ -20,11 +20,12 @@ const styles = StyleSheet.create({
         paddingLeft: theme.spacing.base,
     },
     title: {
-        marginBottom: theme.spacing.base,
+        padding: theme.spacing.base,
+        marginBottom: theme.spacing.xl,
     },
     chartPlaceholder: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         backgroundColor: theme.colors.surface,
         borderRadius: theme.borderRadius.base,
