@@ -7,6 +7,7 @@ export type CartItem = {
     name: string;
     price: number;
     quantity: number;
+    unitType: 'unit' | 'weight_g' | 'weight_kg';
 };
 
 interface CartSummaryProps {
@@ -22,6 +23,13 @@ interface CartSummaryProps {
 export function CartSummary({ items, onCancel, onCheckout, onRemoveItem }: CartSummaryProps) {
     const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const hasItems = items.length > 0;
+
+    // Helper to get unit suffix for quantity display
+    const getQuantitySuffix = (unitType: 'unit' | 'weight_g' | 'weight_kg') => {
+        if (unitType === 'weight_g') return ' g';
+        if (unitType === 'weight_kg') return ' kg';
+        return '';
+    };
 
     return (
         <View style={styles.container}>
@@ -39,7 +47,7 @@ export function CartSummary({ items, onCancel, onCheckout, onRemoveItem }: CartS
                                 {item.name}
                             </Text>
                             <Text variant="bodySmall" color="secondary" style={styles.itemQuantity}>
-                                x{item.quantity}
+                                x{item.quantity}{getQuantitySuffix(item.unitType)}
                             </Text>
                             <Text variant="bodySmall" semibold style={styles.itemPrice}>
                                 ${(item.price * item.quantity).toFixed(2)}

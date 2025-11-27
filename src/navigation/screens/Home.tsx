@@ -10,14 +10,14 @@ import { theme } from '../../theme';
 
 // Initial product data
 const INITIAL_PRODUCTS: Product[] = [
-  { id: '1', name: 'Product 1', price: 10.99, image: 'https://placehold.co/125/png', stock: 10, description: "placeholder" },
-  { id: '2', name: 'Product 2', price: 15.99, image: 'https://placehold.co/125/png', stock: 5, description: "placeholder" },
-  { id: '3', name: 'Product 3', price: 8.99, image: 'https://placehold.co/125/png', stock: 15, description: "placeholder" },
-  { id: '4', name: 'Product 4', price: 12.99, image: 'https://placehold.co/125/png', stock: 3, description: "placeholder" },
-  { id: '5', name: 'Product 5', price: 20.99, image: 'https://placehold.co/125/png', stock: 8, description: "placeholder" },
-  { id: '6', name: 'Product 6', price: 18.99, image: 'https://placehold.co/125/png', stock: 12, description: "placeholder" },
-  { id: '7', name: 'Product 7', price: 25.99, image: 'https://placehold.co/125/png', stock: 2, description: "placeholder" },
-  { id: '8', name: 'Product 8', price: 14.99, image: 'https://placehold.co/125/png', stock: 20, description: "placeholder" },
+  { id: '1', name: 'Product 1', price: 10.99, image: 'https://placehold.co/125/png', stock: 10, description: "placeholder", unitType: 'unit' },
+  { id: '2', name: 'Product 2', price: 15.99, image: 'https://placehold.co/125/png', stock: 5, description: "placeholder", unitType: 'unit' },
+  { id: '3', name: 'Product 3', price: 8.99, image: 'https://placehold.co/125/png', stock: 15, description: "placeholder", unitType: 'unit' },
+  { id: '4', name: 'Product 4', price: 12.99, image: 'https://placehold.co/125/png', stock: 3, description: "placeholder", unitType: 'weight_kg' },
+  { id: '5', name: 'Product 5', price: 20.99, image: 'https://placehold.co/125/png', stock: 8, description: "placeholder", unitType: 'unit' },
+  { id: '6', name: 'Product 6', price: 18.99, image: 'https://placehold.co/125/png', stock: 12, description: "placeholder", unitType: 'weight_kg' },
+  { id: '7', name: 'Product 7', price: 25.99, image: 'https://placehold.co/125/png', stock: 2, description: "placeholder", unitType: 'unit' },
+  { id: '8', name: 'Product 8', price: 14.99, image: 'https://placehold.co/125/png', stock: 20, description: "placeholder", unitType: 'unit' },
 ];
 
 export function Home() {
@@ -61,6 +61,14 @@ export function Home() {
       const existing = prev[productId];
       if (!existing) return prev;
 
+      // If quantity is a float (not an integer), remove the item entirely
+      if (existing.quantity % 1 !== 0) {
+        const newCart = { ...prev };
+        delete newCart[productId];
+        return newCart;
+      }
+
+      // For integer quantities, decrement by 1
       if (existing.quantity === 1) {
         const newCart = { ...prev };
         delete newCart[productId];
@@ -79,6 +87,34 @@ export function Home() {
       const newCart = { ...prev };
       delete newCart[productId];
       return newCart;
+    });
+  };
+
+  const setCartQuantity = (productId: string, quantity: number) => {
+    if (quantity <= 0) {
+      // Remove from cart if quantity is 0 or negative
+      removeItemCompletely(productId);
+      return;
+    }
+
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    // Clamp to stock limit
+    const clampedQuantity = Math.min(quantity, product.stock);
+
+    setCart(prev => {
+      const existing = prev[productId];
+      if (existing) {
+        return {
+          ...prev,
+          [productId]: { ...existing, quantity: clampedQuantity }
+        };
+      }
+      return {
+        ...prev,
+        [productId]: { ...product, quantity: clampedQuantity }
+      };
     });
   };
 
@@ -144,6 +180,7 @@ export function Home() {
         cart={cart}
         onAddToCart={addToCart}
         onRemoveFromCart={removeFromCart}
+        onSetQuantity={setCartQuantity}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onAddProductPress={() => setIsModalVisible(true)}

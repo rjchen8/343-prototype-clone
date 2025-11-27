@@ -1,4 +1,5 @@
-import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Image, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { Text } from '../ui';
 import { theme } from '../../theme';
 
@@ -9,6 +10,7 @@ export type Product = {
     image: string;
     stock: number;
     description: string;
+    unitType: 'unit' | 'weight_g' | 'weight_kg'; // 'unit' for discrete items, 'weight_g' for grams, 'weight_kg' for kilograms
 };
 
 interface ProductCardProps {
@@ -17,13 +19,63 @@ interface ProductCardProps {
     onAdd: () => void;
     onRemove: () => void;
     onInfo?: () => void;
+    onQuantityChange?: (quantity: number) => void;
 }
 
 /**
  * Product card component displaying product info and quantity controls
  */
-export function ProductCard({ product, quantity, onAdd, onRemove, onInfo }: ProductCardProps) {
+export function ProductCard({ product, quantity, onAdd, onRemove, onInfo, onQuantityChange }: ProductCardProps) {
     const isOutOfStock = quantity >= product.stock;
+    const [quantityText, setQuantityText] = React.useState(quantity.toString());
+
+    // Update text when quantity prop changes
+    React.useEffect(() => {
+        setQuantityText(quantity.toString());
+    }, [quantity]);
+
+    const handleQuantityChange = (text: string) => {
+        setQuantityText(text);
+    };
+
+    const handleQuantityBlur = () => {
+        const parsedQuantity = parseFloat(quantityText);
+
+        // Validate the input
+        if (isNaN(parsedQuantity) || parsedQuantity < 0) {
+            // Reset to current quantity if invalid
+            setQuantityText(quantity.toString());
+            return;
+        }
+
+        // For unit-based products, round to nearest integer
+        const finalQuantity = product.unitType === 'unit'
+            ? Math.round(parsedQuantity)
+            : parsedQuantity;
+
+        // Don't exceed stock
+        const clampedQuantity = Math.min(finalQuantity, product.stock);
+
+        if (onQuantityChange && clampedQuantity !== quantity) {
+            onQuantityChange(clampedQuantity);
+        }
+
+        setQuantityText(clampedQuantity.toString());
+    };
+
+    // Helper to get unit suffix
+    const getUnitSuffix = () => {
+        if (product.unitType === 'weight_g') return ' g';
+        if (product.unitType === 'weight_kg') return ' kg';
+        return '';
+    };
+
+    // Helper to get price suffix
+    const getPriceSuffix = () => {
+        if (product.unitType === 'weight_g') return '/g';
+        if (product.unitType === 'weight_kg') return '/kg';
+        return '';
+    };
 
     return (
         <View style={styles.card}>
@@ -44,7 +96,7 @@ export function ProductCard({ product, quantity, onAdd, onRemove, onInfo }: Prod
             {/* Stock badge in top-right corner */}
             <View style={styles.stockBadge}>
                 <Text variant="caption" color="secondary" semibold>
-                    Stock: {product.stock}
+                    Stock: {product.stock}{getUnitSuffix()}
                 </Text>
             </View>
 
@@ -53,7 +105,7 @@ export function ProductCard({ product, quantity, onAdd, onRemove, onInfo }: Prod
                 {product.name}
             </Text>
             <Text variant="bodySmall" color="secondary" style={styles.price}>
-                ${product.price.toFixed(2)}
+                ${product.price.toFixed(2)}{getPriceSuffix()}
             </Text>
 
             <View style={styles.controls}>
@@ -69,9 +121,14 @@ export function ProductCard({ product, quantity, onAdd, onRemove, onInfo }: Prod
                     <Text style={styles.removeButtonText} bold>-</Text>
                 </TouchableOpacity>
 
-                <Text variant="body" semibold style={styles.quantity}>
-                    {quantity}
-                </Text>
+                <TextInput
+                    style={styles.quantityInput}
+                    value={quantityText}
+                    onChangeText={handleQuantityChange}
+                    onBlur={handleQuantityBlur}
+                    keyboardType="decimal-pad"
+                    selectTextOnFocus
+                />
 
                 <TouchableOpacity
                     style={[
@@ -172,9 +229,18 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.text.tertiary,
         opacity: 0.5,
     },
-    quantity: {
-        minWidth: 24,
+    quantityInput: {
+        minWidth: 40,
+        height: 32,
         textAlign: 'center',
+        fontSize: theme.typography.fontSize.base,
+        fontWeight: theme.typography.fontWeight.semibold,
+        color: theme.colors.text.primary,
+        backgroundColor: theme.colors.background,
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+        borderRadius: theme.borderRadius.sm,
+        paddingHorizontal: theme.spacing.xs,
     },
     outOfStockText: {
         marginTop: theme.spacing.xs,

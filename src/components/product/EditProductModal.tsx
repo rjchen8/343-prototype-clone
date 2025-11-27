@@ -22,6 +22,7 @@ export function EditProductModal({ visible, product, onClose, onUpdate, onDelete
     const [stock, setStock] = useState('');
     const [description, setDescription] = useState('');
     const [photo, setPhoto] = useState<string | null>(null);
+    const [unitType, setUnitType] = useState<'unit' | 'weight_g' | 'weight_kg'>('unit');
 
     // Update form when product changes
     useEffect(() => {
@@ -31,6 +32,7 @@ export function EditProductModal({ visible, product, onClose, onUpdate, onDelete
             setStock(product.stock.toString());
             setDescription(product.description);
             setPhoto(product.image);
+            setUnitType(product.unitType);
         }
     }, [product]);
 
@@ -62,6 +64,7 @@ export function EditProductModal({ visible, product, onClose, onUpdate, onDelete
             stock: stockNum,
             description: description.trim() || 'No description provided',
             image: photo || product.image,
+            unitType,
         });
 
         onClose();
@@ -204,7 +207,9 @@ export function EditProductModal({ visible, product, onClose, onUpdate, onDelete
 
                                 {/* Price Field */}
                                 <View style={styles.fieldContainer}>
-                                    <Text variant="label" style={styles.label}>Price</Text>
+                                    <Text variant="label" style={styles.label}>
+                                        Price {unitType === 'unit' ? '(/unit)' : unitType === 'weight_g' ? '(/g)' : '(/kg)'}
+                                    </Text>
                                     <Input
                                         value={price}
                                         onChangeText={setPrice}
@@ -215,13 +220,79 @@ export function EditProductModal({ visible, product, onClose, onUpdate, onDelete
 
                                 {/* Stock Field */}
                                 <View style={styles.fieldContainer}>
-                                    <Text variant="label" style={styles.label}>Stock quantity</Text>
+                                    <Text variant="label" style={styles.label}>
+                                        Stock quantity {unitType === 'unit' ? '' : unitType === 'weight_g' ? '(g)' : '(kg)'}
+                                    </Text>
                                     <Input
                                         value={stock}
                                         onChangeText={setStock}
                                         placeholder="0"
                                         keyboardType="number-pad"
                                     />
+                                </View>
+
+                                {/* Unit Type Selector */}
+                                <View style={styles.fieldContainer}>
+                                    <Text variant="label" style={styles.label}>Unit type</Text>
+                                    <View style={styles.unitTypeContainer}>
+                                        <TouchableOpacity
+                                            style={[
+                                                styles.unitTypeButton,
+                                                unitType === 'unit' && styles.unitTypeButtonActive
+                                            ]}
+                                            onPress={() => setUnitType('unit')}
+                                            activeOpacity={0.7}
+                                        >
+                                            <Text
+                                                variant="bodySmall"
+                                                semibold
+                                                style={[
+                                                    styles.unitTypeButtonText,
+                                                    unitType === 'unit' && styles.unitTypeButtonTextActive
+                                                ]}
+                                            >
+                                                Unit
+                                            </Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={[
+                                                styles.unitTypeButton,
+                                                unitType === 'weight_g' && styles.unitTypeButtonActive
+                                            ]}
+                                            onPress={() => setUnitType('weight_g')}
+                                            activeOpacity={0.7}
+                                        >
+                                            <Text
+                                                variant="bodySmall"
+                                                semibold
+                                                style={[
+                                                    styles.unitTypeButtonText,
+                                                    unitType === 'weight_g' && styles.unitTypeButtonTextActive
+                                                ]}
+                                            >
+                                                Weight (g)
+                                            </Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={[
+                                                styles.unitTypeButton,
+                                                unitType === 'weight_kg' && styles.unitTypeButtonActive
+                                            ]}
+                                            onPress={() => setUnitType('weight_kg')}
+                                            activeOpacity={0.7}
+                                        >
+                                            <Text
+                                                variant="bodySmall"
+                                                semibold
+                                                style={[
+                                                    styles.unitTypeButtonText,
+                                                    unitType === 'weight_kg' && styles.unitTypeButtonTextActive
+                                                ]}
+                                            >
+                                                Weight (kg)
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
                             </View>
                         </View>
@@ -372,5 +443,30 @@ const styles = StyleSheet.create({
     },
     updateButton: {
         flex: 2,
+    },
+    unitTypeContainer: {
+        flexDirection: 'row',
+        gap: theme.spacing.sm,
+    },
+    unitTypeButton: {
+        flex: 1,
+        paddingVertical: theme.spacing.sm,
+        paddingHorizontal: theme.spacing.md,
+        borderRadius: theme.borderRadius.base,
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+        backgroundColor: theme.colors.surface,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    unitTypeButtonActive: {
+        backgroundColor: theme.colors.primary,
+        borderColor: theme.colors.primary,
+    },
+    unitTypeButtonText: {
+        color: theme.colors.text.secondary,
+    },
+    unitTypeButtonTextActive: {
+        color: theme.colors.text.inverse,
     },
 });

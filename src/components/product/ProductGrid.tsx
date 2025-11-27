@@ -9,6 +9,7 @@ interface ProductGridProps {
     cart: Record<string, { quantity: number }>;
     onAddToCart: (product: Product) => void;
     onRemoveFromCart: (productId: string) => void;
+    onSetQuantity: (productId: string, quantity: number) => void;
     searchQuery: string;
     onSearchChange: (query: string) => void;
     onAddProductPress: () => void;
@@ -23,6 +24,7 @@ export function ProductGrid({
     cart,
     onAddToCart,
     onRemoveFromCart,
+    onSetQuantity,
     searchQuery,
     onSearchChange,
     onAddProductPress,
@@ -48,6 +50,7 @@ export function ProductGrid({
                         onAdd={() => onAddToCart(item)}
                         onRemove={() => onRemoveFromCart(item.id)}
                         onInfo={onEditProduct ? () => onEditProduct(item) : undefined}
+                        onQuantityChange={(quantity) => onSetQuantity(item.id, quantity)}
                     />
                 )}
                 ListFooterComponent={
