@@ -40,18 +40,13 @@ export function AddProductModal({ visible, onClose, onAdd }: AddProductModalProp
             return;
         }
 
-        if (!photo) {
-            alert('Please add a photo');
-            return;
-        }
-
         // Add the product
         onAdd({
             name: name.trim(),
             price: priceNum,
             stock: stockNum,
             description: description.trim() || 'No description provided',
-            image: photo,
+            image: photo ? photo : 'https://placehold.co/125/png',
         });
 
         // Reset form
