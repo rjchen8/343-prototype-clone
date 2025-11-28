@@ -6,39 +6,77 @@ import { SuccessModal } from '../../components/cart/SuccessModal';
 import { Product } from '../../components/product/ProductCard';
 import { AddProductModal } from '../../components/product/AddProductModal';
 import { EditProductModal } from '../../components/product/EditProductModal';
+import { DropdownOption } from '../../components/ui/Dropdown';
 import { theme } from '../../theme';
 
 // Initial product data
 const INITIAL_PRODUCTS: Product[] = [
-  { id: '1', name: 'Product 1', price: 10.99, image: 'https://placehold.co/125/png', stock: 10, description: "placeholder", unitType: 'unit' },
-  { id: '2', name: 'Product 2', price: 15.99, image: 'https://placehold.co/125/png', stock: 5, description: "placeholder", unitType: 'unit' },
-  { id: '3', name: 'Product 3', price: 8.99, image: 'https://placehold.co/125/png', stock: 15, description: "placeholder", unitType: 'unit' },
-  { id: '4', name: 'Product 4', price: 12.99, image: 'https://placehold.co/125/png', stock: 3, description: "placeholder", unitType: 'weight_kg' },
-  { id: '5', name: 'Product 5', price: 20.99, image: 'https://placehold.co/125/png', stock: 8, description: "placeholder", unitType: 'unit' },
-  { id: '6', name: 'Product 6', price: 18.99, image: 'https://placehold.co/125/png', stock: 12, description: "placeholder", unitType: 'weight_kg' },
+  { id: '1', name: 'Product 1', price: 10.99, image: 'https://placehold.co/125/png', stock: 10, description: "placeholder", unitType: 'unit', category: 'Electronics' },
+  { id: '2', name: 'Product 2', price: 15.99, image: 'https://placehold.co/125/png', stock: 5, description: "placeholder", unitType: 'unit', category: 'Electronics' },
+  { id: '3', name: 'Product 3', price: 8.99, image: 'https://placehold.co/125/png', stock: 15, description: "placeholder", unitType: 'unit', category: 'Clothing' },
+  { id: '4', name: 'Product 4', price: 12.99, image: 'https://placehold.co/125/png', stock: 3, description: "placeholder", unitType: 'weight_kg', category: 'Food' },
+  { id: '5', name: 'Product 5', price: 20.99, image: 'https://placehold.co/125/png', stock: 8, description: "placeholder", unitType: 'unit', category: 'Clothing' },
+  { id: '6', name: 'Product 6', price: 18.99, image: 'https://placehold.co/125/png', stock: 12, description: "placeholder", unitType: 'weight_kg', category: 'Food' },
   { id: '7', name: 'Product 7', price: 25.99, image: 'https://placehold.co/125/png', stock: 2, description: "placeholder", unitType: 'unit' },
-  { id: '8', name: 'Product 8', price: 14.99, image: 'https://placehold.co/125/png', stock: 20, description: "placeholder", unitType: 'unit' },
+  { id: '8', name: 'Product 8', price: 14.99, image: 'https://placehold.co/125/png', stock: 20, description: "placeholder", unitType: 'unit', category: 'Electronics' },
 ];
 
 export function Home() {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [cart, setCart] = useState<Record<string, CartItem>>({});
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  // Filter products based on search query
-  const filteredProducts = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return products;
-    }
-    const query = searchQuery.toLowerCase();
-    return products.filter(product =>
-      product.name.toLowerCase().includes(query)
+  // Compute unique categories from products
+  const categoryOptions = useMemo(() => {
+    const uniqueCategories = new Set(
+      products
+        .map(p => p.category || 'Uncategorized')
+        .filter(c => c !== 'Uncategorized')
     );
-  }, [searchQuery, products]);
+    const options: DropdownOption[] = [
+      { label: 'All Categories', value: '' },
+      { label: 'Uncategorized', value: 'Uncategorized' },
+      ...Array.from(uniqueCategories).sort().map(cat => ({
+        label: cat,
+        value: cat,
+      })),
+    ];
+    return options;
+  }, [products]);
+
+  // Get existing categories for modals (all categories except 'All Categories')
+  const existingCategories = useMemo(() => {
+    const uniqueCategories = new Set(
+      products
+        .map(p => p.category || 'Uncategorized')
+    );
+    return Array.from(uniqueCategories).sort();
+  }, [products]);
+
+  // Filter products based on search query and category
+  const filteredProducts = useMemo(() => {
+    let result = products;
+
+    // Filter by category
+    if (selectedCategory) {
+      result = result.filter(product => (product.category || 'Uncategorized') === selectedCategory);
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(product =>
+        product.name.toLowerCase().includes(query)
+      );
+    }
+
+    return result;
+  }, [searchQuery, selectedCategory, products]);
 
   const addToCart = (product: Product) => {
     setCart(prev => {
@@ -185,6 +223,9 @@ export function Home() {
         onSearchChange={setSearchQuery}
         onAddProductPress={() => setIsModalVisible(true)}
         onEditProduct={handleEditProduct}
+        categories={categoryOptions}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
       />
       <CartSummary
         items={cartItems}
@@ -197,6 +238,7 @@ export function Home() {
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
         onAdd={handleAddProduct}
+        existingCategories={existingCategories}
       />
 
       <EditProductModal
@@ -208,6 +250,7 @@ export function Home() {
         }}
         onUpdate={handleUpdateProduct}
         onDelete={handleDeleteProduct}
+        existingCategories={existingCategories}
       />
 
       <SuccessModal

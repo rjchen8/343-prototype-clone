@@ -1,5 +1,5 @@
 import { View, FlatList, StyleSheet } from 'react-native';
-import { Text, SearchBar } from '../ui';
+import { Text, SearchBar, Dropdown, DropdownOption } from '../ui';
 import { ProductCard, Product } from './ProductCard';
 import { AddProductCard } from './AddProductCard';
 import { theme } from '../../theme';
@@ -14,6 +14,9 @@ interface ProductGridProps {
     onSearchChange: (query: string) => void;
     onAddProductPress: () => void;
     onEditProduct?: (product: Product) => void;
+    categories: DropdownOption[];
+    selectedCategory: string;
+    onCategoryChange: (category: string) => void;
 }
 
 /**
@@ -29,6 +32,9 @@ export function ProductGrid({
     onSearchChange,
     onAddProductPress,
     onEditProduct,
+    categories,
+    selectedCategory,
+    onCategoryChange,
 }: ProductGridProps) {
     return (
         <View style={styles.container}>
@@ -43,6 +49,16 @@ export function ProductGrid({
                 keyExtractor={item => item.id}
                 numColumns={3}
                 contentContainerStyle={styles.grid}
+                ListHeaderComponent={
+                    <View style={styles.filterContainer}>
+                        <Dropdown
+                            label="Category"
+                            value={selectedCategory}
+                            options={categories}
+                            onValueChange={onCategoryChange}
+                        />
+                    </View>
+                }
                 renderItem={({ item }) => (
                     <ProductCard
                         product={item}
@@ -67,6 +83,11 @@ const styles = StyleSheet.create({
     },
     title: {
         marginBottom: theme.spacing.base,
+    },
+    filterContainer: {
+        gap: theme.spacing.md,
+        marginBottom: theme.spacing.md,
+        paddingHorizontal: theme.spacing.xs,
     },
     grid: {
         gap: theme.spacing.md,

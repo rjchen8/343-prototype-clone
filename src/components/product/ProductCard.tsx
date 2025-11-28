@@ -11,6 +11,7 @@ export type Product = {
     stock: number;
     description: string;
     unitType: 'unit' | 'weight_g' | 'weight_kg'; // 'unit' for discrete items, 'weight_g' for grams, 'weight_kg' for kilograms
+    category?: string; // Optional category, defaults to 'Uncategorized'
 };
 
 interface ProductCardProps {
@@ -104,6 +105,9 @@ export function ProductCard({ product, quantity, onAdd, onRemove, onInfo, onQuan
             <Text variant="bodySmall" semibold numberOfLines={1}>
                 {product.name}
             </Text>
+            <Text variant="caption" color="secondary" style={styles.category}>
+                {product.category || 'Uncategorized'}
+            </Text>
             <Text variant="bodySmall" color="secondary" style={styles.price}>
                 ${product.price.toFixed(2)}{getPriceSuffix()}
             </Text>
@@ -196,6 +200,9 @@ const styles = StyleSheet.create({
         height: 100,
         borderRadius: theme.borderRadius.base,
         marginBottom: theme.spacing.sm,
+    },
+    category: {
+        marginBottom: theme.spacing.xs,
     },
     price: {
         marginBottom: theme.spacing.sm,

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Modal, View, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { Text, Button, Input } from '../ui';
+import { Text, Button, Input, Dropdown, DropdownOption } from '../ui';
 import { theme } from '../../theme';
 import { Product } from './ProductCard';
 
@@ -11,18 +11,30 @@ interface EditProductModalProps {
     onClose: () => void;
     onUpdate: (productId: string, updates: Omit<Product, 'id'>) => void;
     onDelete: (productId: string) => void;
+    existingCategories?: string[];
 }
 
 /**
  * Modal for editing existing products with two-column layout
  */
-export function EditProductModal({ visible, product, onClose, onUpdate, onDelete }: EditProductModalProps) {
+export function EditProductModal({ visible, product, onClose, onUpdate, onDelete, existingCategories = [] }: EditProductModalProps) {
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [stock, setStock] = useState('');
     const [description, setDescription] = useState('');
     const [photo, setPhoto] = useState<string | null>(null);
     const [unitType, setUnitType] = useState<'unit' | 'weight_g' | 'weight_kg'>('unit');
+    const [category, setCategory] = useState('');
+    const [categoryInput, setCategoryInput] = useState('');
+
+    // Build category options from existing categories (include an empty option)
+    const categoryOptions = [
+        { label: '', value: '' },
+        ...existingCategories
+            .filter(cat => cat !== 'Uncategorized')
+            .sort()
+            .map(cat => ({ label: cat, value: cat })),
+    ];
 
     // Update form when product changes
     useEffect(() => {
@@ -33,6 +45,8 @@ export function EditProductModal({ visible, product, onClose, onUpdate, onDelete
             setDescription(product.description);
             setPhoto(product.image);
             setUnitType(product.unitType);
+            setCategory(product.category || '');
+            setCategoryInput('');
         }
     }, [product]);
 
@@ -58,6 +72,7 @@ export function EditProductModal({ visible, product, onClose, onUpdate, onDelete
         }
 
         // Update the product
+        const finalCategory = categoryInput.trim() || category || undefined;
         onUpdate(product.id, {
             name: name.trim(),
             price: priceNum,
@@ -65,6 +80,7 @@ export function EditProductModal({ visible, product, onClose, onUpdate, onDelete
             description: description.trim() || 'No description provided',
             image: photo || product.image,
             unitType,
+            category: finalCategory,
         });
 
         onClose();
@@ -294,6 +310,29 @@ export function EditProductModal({ visible, product, onClose, onUpdate, onDelete
                                         </TouchableOpacity>
                                     </View>
                                 </View>
+
+                                {/* Category Field */}
+                                <View style={styles.fieldContainer}>
+                                    <Text variant="label" style={styles.label}>
+                                        Category <Text variant="caption" color="tertiary">(optional)</Text>
+                                    </Text>
+                                    <Dropdown
+                                        label=""
+                                        value={category}
+                                        options={categoryOptions}
+                                        onValueChange={setCategory}
+                                    />
+                                    <View style={styles.newCategoryContainer}>
+                                        <Text variant="bodySmall" color="secondary" style={styles.newCategoryLabel}>
+                                            Or create a new category:
+                                        </Text>
+                                        <Input
+                                            value={categoryInput}
+                                            onChangeText={setCategoryInput}
+                                            placeholder="Enter new category name"
+                                        />
+                                    </View>
+                                </View>
                             </View>
                         </View>
                     </ScrollView>
@@ -468,5 +507,14 @@ const styles = StyleSheet.create({
     },
     unitTypeButtonTextActive: {
         color: theme.colors.text.inverse,
+    },
+    newCategoryContainer: {
+        marginTop: theme.spacing.sm,
+        paddingTop: theme.spacing.sm,
+        borderTopWidth: 1,
+        borderTopColor: theme.colors.border,
+    },
+    newCategoryLabel: {
+        marginBottom: theme.spacing.sm,
     },
 });
