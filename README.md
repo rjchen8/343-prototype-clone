@@ -1,65 +1,31 @@
-# Starter Template with React Navigation
+# MSE343 Endings 4: Omega
 
-This is a minimal starter template for React Native apps using Expo and React Navigation.
+## Build Instructions
+From the root of the repository, run:
+```
+npm i
+```
 
-It includes the following:
+### Web Build
+After, to run the application on your local machine on the web, run:
+```
+npm start
+```
+Then press `w` to open the app in web mode. 
 
-- Example [Native Stack](https://reactnavigation.org/docs/native-stack-navigator) with a nested [Bottom Tab](https://reactnavigation.org/docs/bottom-tab-navigator)
-- Web support with [React Native for Web](https://necolas.github.io/react-native-web/)
-- TypeScript support and configured for React Navigation
-- Automatic [deep link](https://reactnavigation.org/docs/deep-linking) and [URL handling configuration](https://reactnavigation.org/docs/configuring-links)
-- Theme support [based on system appearance](https://reactnavigation.org/docs/themes/#using-the-operating-system-preferences)
-- Expo [Development Build](https://docs.expo.dev/develop/development-builds/introduction/) with [Continuous Native Generation](https://docs.expo.dev/workflow/continuous-native-generation/)
+### iOS Build
+1. Download [Expo Go](https://apps.apple.com/us/app/expo-go/id982107779) from the App Store.
+2. Run
+```
+npx expo start --tunnel
+```
+3. Press `s` on your keyboard to switch to Expo Go.
+4. Scan the QR code from your terminal with your iOS device.
+5. Click on the button below:
 
-## Getting Started
+<img width="1381" height="120" alt="image" src="https://github.com/user-attachments/assets/0502ff76-3985-446d-890c-4ce890cbc84a" />
 
-1. Create a new project using this template:
-
-   ```sh
-   npx create-expo-app@latest --template react-navigation/template
-   ```
-
-2. Edit the `app.json` file to configure the `name`, `slug`, `scheme` and bundle identifiers (`ios.bundleIdentifier` and `android.bundleIdentifier`) for your app.
-
-3. Edit the `src/App.tsx` file to start working on your app.
-
-## Running the app
-
-- Install the dependencies:
-
-  ```sh
-  npm install
-  ```
-
-- Start the development server:
-
-  ```sh
-  npm start
-  ```
-
-- Build and run iOS and Android development builds:
-
-  ```sh
-  npm run ios
-  # or
-  npm run android
-  ```
-
-- In the terminal running the development server, press `i` to open the iOS simulator, `a` to open the Android device or emulator, or `w` to open the web browser.
-
-## Notes
-
-This project uses a [development build](https://docs.expo.dev/develop/development-builds/introduction/) and cannot be run with [Expo Go](https://expo.dev/go). To run the app with Expo Go, edit the `package.json` file, remove the `expo-dev-client` package and `--dev-client` flag from the `start` script.
-
-We highly recommend using the development builds for normal development and testing.
-
-The `ios` and `android` folder are gitignored in the project by default as they are automatically generated during the build process ([Continuous Native Generation](https://docs.expo.dev/workflow/continuous-native-generation/)). This means that you should not edit these folders directly and use [config plugins](https://docs.expo.dev/config-plugins/) instead. However, if you need to edit these folders, you can remove them from the `.gitignore` file so that they are tracked by git.
-
-## Resources
-
-- [React Navigation documentation](https://reactnavigation.org/)
-- [Expo documentation](https://docs.expo.dev/)
-
----
-
-Demo assets are from [lucide.dev](https://lucide.dev/)
+6. Click on the **3 dots**.
+7. Click on **Request Mobile Website**
+8. Finally, click on **Expo Go**, then **Open** to open the app.
+Once the app finishes building, you should see the main home page.
