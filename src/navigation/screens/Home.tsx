@@ -11,14 +11,14 @@ import { theme } from '../../theme';
 
 // Initial product data
 const INITIAL_PRODUCTS: Product[] = [
-  { id: '1', name: 'Product 1', price: 10.99, image: 'https://placehold.co/125/png', stock: 10, description: "placeholder", unitType: 'unit', category: 'Electronics' },
-  { id: '2', name: 'Product 2', price: 15.99, image: 'https://placehold.co/125/png', stock: 5, description: "placeholder", unitType: 'unit', category: 'Electronics' },
-  { id: '3', name: 'Product 3', price: 8.99, image: 'https://placehold.co/125/png', stock: 15, description: "placeholder", unitType: 'unit', category: 'Clothing' },
-  { id: '4', name: 'Product 4', price: 12.99, image: 'https://placehold.co/125/png', stock: 3, description: "placeholder", unitType: 'weight_kg', category: 'Food' },
-  { id: '5', name: 'Product 5', price: 20.99, image: 'https://placehold.co/125/png', stock: 8, description: "placeholder", unitType: 'unit', category: 'Clothing' },
-  { id: '6', name: 'Product 6', price: 18.99, image: 'https://placehold.co/125/png', stock: 12, description: "placeholder", unitType: 'weight_kg', category: 'Food' },
+  { id: '1', name: 'Product 1', price: 10.99, image: 'https://placehold.co/125/png', stock: 10, description: "placeholder", unitType: 'unit', category: 'Berries' },
+  { id: '2', name: 'Product 2', price: 15.99, image: 'https://placehold.co/125/png', stock: 5, description: "placeholder", unitType: 'unit', category: 'Berries' },
+  { id: '3', name: 'Product 3', price: 8.99, image: 'https://placehold.co/125/png', stock: 15, description: "placeholder", unitType: 'unit', category: 'Vegetables' },
+  { id: '4', name: 'Product 4', price: 12.99, image: 'https://placehold.co/125/png', stock: 3, description: "placeholder", unitType: 'weight_kg', category: 'Citrus' },
+  { id: '5', name: 'Product 5', price: 20.99, image: 'https://placehold.co/125/png', stock: 8, description: "placeholder", unitType: 'unit', category: 'Vegetables' },
+  { id: '6', name: 'Product 6', price: 18.99, image: 'https://placehold.co/125/png', stock: 12, description: "placeholder", unitType: 'weight_kg', category: 'Citrus' },
   { id: '7', name: 'Product 7', price: 25.99, image: 'https://placehold.co/125/png', stock: 2, description: "placeholder", unitType: 'unit' },
-  { id: '8', name: 'Product 8', price: 14.99, image: 'https://placehold.co/125/png', stock: 20, description: "placeholder", unitType: 'unit', category: 'Electronics' },
+  { id: '8', name: 'Product 8', price: 14.99, image: 'https://placehold.co/125/png', stock: 20, description: "placeholder", unitType: 'unit', category: 'Berries' },
 ];
 
 export function Home() {
@@ -81,15 +81,16 @@ export function Home() {
   const addToCart = (product: Product) => {
     setCart(prev => {
       const existing = prev[product.id];
+      const toAdd = Math.min(product.stock, 1);
       if (existing) {
         return {
           ...prev,
-          [product.id]: { ...existing, quantity: existing.quantity + 1 }
+          [product.id]: { ...existing, quantity: existing.quantity + toAdd }
         };
       }
       return {
         ...prev,
-        [product.id]: { ...product, quantity: 1 }
+        [product.id]: { ...product, quantity: toAdd }
       };
     });
   };
