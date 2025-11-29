@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Modal, View, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import { Modal, View, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Text, Button, Input, Dropdown, DropdownOption } from '../ui';
 import { theme } from '../../theme';
@@ -126,168 +126,172 @@ export function AddProductModal({ visible, onClose, onAdd, existingCategories = 
                         contentContainerStyle={styles.scrollContent}
                         showsVerticalScrollIndicator={false}
                         keyboardShouldPersistTaps="handled"
+                        onScrollBeginDrag={() => Keyboard.dismiss()}
                     >
-                        <View style={styles.content}>
-                            {/* Left Column - Photo and Description */}
-                            <View style={styles.leftColumn}>
-                                <TouchableOpacity
-                                    style={styles.photoTile}
-                                    activeOpacity={0.7}
-                                    onPress={handlePickPhoto}
-                                >
-                                    {photo ? (
-                                        <Image source={{ uri: photo }} style={styles.photoImage} />
-                                    ) : (
-                                        <>
-                                            <View style={styles.photoIconContainer}>
-                                                <Text style={styles.photoIcon}>+</Text>
-                                            </View>
-                                            <Text variant="bodySmall" color="secondary" style={styles.photoText}>
-                                                Add photo of item
-                                            </Text>
-                                        </>
-                                    )}
-                                </TouchableOpacity>
+                        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                            <View style={styles.content}>
+                                {/* Left Column - Photo and Description */}
+                                <View style={styles.leftColumn}>
+                                    <TouchableOpacity
+                                        style={styles.photoTile}
+                                        activeOpacity={0.7}
+                                        onPress={handlePickPhoto}
+                                    >
+                                        {photo ? (
+                                            <Image source={{ uri: photo }} style={styles.photoImage} />
+                                        ) : (
+                                            <>
+                                                <View style={styles.photoIconContainer}>
+                                                    <Text style={styles.photoIcon}>+</Text>
+                                                </View>
+                                                <Text variant="bodySmall" color="secondary" style={styles.photoText}>
+                                                    Add photo of item
+                                                </Text>
+                                            </>
+                                        )}
+                                    </TouchableOpacity>
 
-                                {/* Description Field */}
-                                <View style={styles.fieldContainer}>
-                                    <Text variant="label" style={styles.label}>
-                                        Description <Text variant="caption" color="tertiary">(optional)</Text>
-                                    </Text>
-                                    <Input
-                                        value={description}
-                                        onChangeText={setDescription}
-                                        placeholder="Enter product description"
-                                    />
-                                </View>
-                            </View>
-
-                            {/* Right Column - Name, Price, Stock */}
-                            <View style={styles.rightColumn}>
-                                {/* Name Field */}
-                                <View style={styles.fieldContainer}>
-                                    <Text variant="label" style={styles.label}>Product name</Text>
-                                    <Input
-                                        value={name}
-                                        onChangeText={setName}
-                                        placeholder="Enter product name"
-                                    />
-                                </View>
-
-                                {/* Price Field */}
-                                <View style={styles.fieldContainer}>
-                                    <Text variant="label" style={styles.label}>
-                                        Price {unitType === 'unit' ? '(/unit)' : unitType === 'weight_g' ? '(/g)' : '(/kg)'}
-                                    </Text>
-                                    <Input
-                                        value={price}
-                                        onChangeText={setPrice}
-                                        placeholder="0.00"
-                                        keyboardType="decimal-pad"
-                                    />
-                                </View>
-
-                                {/* Stock Field */}
-                                <View style={styles.fieldContainer}>
-                                    <Text variant="label" style={styles.label}>
-                                        Stock quantity {unitType === 'unit' ? '' : unitType === 'weight_g' ? '(g)' : '(kg)'}
-                                    </Text>
-                                    <Input
-                                        value={stock}
-                                        onChangeText={setStock}
-                                        placeholder="0"
-                                        keyboardType="number-pad"
-                                    />
-                                </View>
-
-                                {/* Unit Type Selector */}
-                                <View style={styles.fieldContainer}>
-                                    <Text variant="label" style={styles.label}>Unit type</Text>
-                                    <View style={styles.unitTypeContainer}>
-                                        <TouchableOpacity
-                                            style={[
-                                                styles.unitTypeButton,
-                                                unitType === 'unit' && styles.unitTypeButtonActive
-                                            ]}
-                                            onPress={() => setUnitType('unit')}
-                                            activeOpacity={0.7}
-                                        >
-                                            <Text
-                                                variant="bodySmall"
-                                                semibold
-                                                style={[
-                                                    styles.unitTypeButtonText,
-                                                    unitType === 'unit' && styles.unitTypeButtonTextActive
-                                                ]}
-                                            >
-                                                Unit
-                                            </Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={[
-                                                styles.unitTypeButton,
-                                                unitType === 'weight_g' && styles.unitTypeButtonActive
-                                            ]}
-                                            onPress={() => setUnitType('weight_g')}
-                                            activeOpacity={0.7}
-                                        >
-                                            <Text
-                                                variant="bodySmall"
-                                                semibold
-                                                style={[
-                                                    styles.unitTypeButtonText,
-                                                    unitType === 'weight_g' && styles.unitTypeButtonTextActive
-                                                ]}
-                                            >
-                                                Weight (g)
-                                            </Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={[
-                                                styles.unitTypeButton,
-                                                unitType === 'weight_kg' && styles.unitTypeButtonActive
-                                            ]}
-                                            onPress={() => setUnitType('weight_kg')}
-                                            activeOpacity={0.7}
-                                        >
-                                            <Text
-                                                variant="bodySmall"
-                                                semibold
-                                                style={[
-                                                    styles.unitTypeButtonText,
-                                                    unitType === 'weight_kg' && styles.unitTypeButtonTextActive
-                                                ]}
-                                            >
-                                                Weight (kg)
-                                            </Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-
-                                {/* Category Field */}
-                                <View style={styles.fieldContainer}>
-                                    <Text variant="label" style={styles.label}>
-                                        Category <Text variant="caption" color="tertiary">(optional)</Text>
-                                    </Text>
-                                    <Dropdown
-                                        label=""
-                                        value={category}
-                                        options={categoryOptions}
-                                        onValueChange={setCategory}
-                                    />
-                                    <View style={styles.newCategoryContainer}>
-                                        <Text variant="bodySmall" color="secondary" style={styles.newCategoryLabel}>
-                                            Or create a new category:
+                                    {/* Description Field */}
+                                    <View style={styles.fieldContainer}>
+                                        <Text variant="label" style={styles.label}>
+                                            Description <Text variant="caption" color="tertiary">(optional)</Text>
                                         </Text>
                                         <Input
-                                            value={categoryInput}
-                                            onChangeText={setCategoryInput}
-                                            placeholder="Enter new category name"
+                                            value={description}
+                                            onChangeText={setDescription}
+                                            placeholder="Enter product description"
                                         />
                                     </View>
+
+                                    {/* Category Field */}
+                                    <View style={styles.fieldContainer}>
+                                        <Text variant="label" style={styles.label}>
+                                            Category <Text variant="caption" color="tertiary">(optional)</Text>
+                                        </Text>
+                                        <Dropdown
+                                            label=""
+                                            value={category}
+                                            options={categoryOptions}
+                                            onValueChange={setCategory}
+                                        />
+                                        <View style={styles.newCategoryContainer}>
+                                            <Text variant="bodySmall" color="secondary" style={styles.newCategoryLabel}>
+                                                Or create a new category:
+                                            </Text>
+                                            <Input
+                                                value={categoryInput}
+                                                onChangeText={setCategoryInput}
+                                                placeholder="Enter new category name"
+                                            />
+                                        </View>
+                                    </View>
+                                </View>
+
+                                {/* Right Column - Name, Price, Stock */}
+                                <View style={styles.rightColumn}>
+                                    {/* Name Field */}
+                                    <View style={styles.fieldContainer}>
+                                        <Text variant="label" style={styles.label}>Product name</Text>
+                                        <Input
+                                            value={name}
+                                            onChangeText={setName}
+                                            placeholder="Enter product name"
+                                        />
+                                    </View>
+
+                                    {/* Price Field */}
+                                    <View style={styles.fieldContainer}>
+                                        <Text variant="label" style={styles.label}>
+                                            Price {unitType === 'unit' ? '(/unit)' : unitType === 'weight_g' ? '(/g)' : '(/kg)'}
+                                        </Text>
+                                        <Input
+                                            value={price}
+                                            onChangeText={setPrice}
+                                            placeholder="0.00"
+                                            keyboardType="decimal-pad"
+                                        />
+                                    </View>
+
+                                    {/* Stock Field */}
+                                    <View style={styles.fieldContainer}>
+                                        <Text variant="label" style={styles.label}>
+                                            Stock quantity {unitType === 'unit' ? '' : unitType === 'weight_g' ? '(g)' : '(kg)'}
+                                        </Text>
+                                        <Input
+                                            value={stock}
+                                            onChangeText={setStock}
+                                            placeholder="0"
+                                            keyboardType="number-pad"
+                                        />
+                                    </View>
+
+                                    {/* Unit Type Selector */}
+                                    <View style={styles.fieldContainer}>
+                                        <Text variant="label" style={styles.label}>Unit type</Text>
+                                        <View style={styles.unitTypeContainer}>
+                                            <TouchableOpacity
+                                                style={[
+                                                    styles.unitTypeButton,
+                                                    unitType === 'unit' && styles.unitTypeButtonActive
+                                                ]}
+                                                onPress={() => setUnitType('unit')}
+                                                activeOpacity={0.7}
+                                            >
+                                                <Text
+                                                    variant="bodySmall"
+                                                    semibold
+                                                    style={[
+                                                        styles.unitTypeButtonText,
+                                                        unitType === 'unit' && styles.unitTypeButtonTextActive
+                                                    ]}
+                                                >
+                                                    Unit
+                                                </Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={[
+                                                    styles.unitTypeButton,
+                                                    unitType === 'weight_g' && styles.unitTypeButtonActive
+                                                ]}
+                                                onPress={() => setUnitType('weight_g')}
+                                                activeOpacity={0.7}
+                                            >
+                                                <Text
+                                                    variant="bodySmall"
+                                                    semibold
+                                                    style={[
+                                                        styles.unitTypeButtonText,
+                                                        unitType === 'weight_g' && styles.unitTypeButtonTextActive
+                                                    ]}
+                                                >
+                                                    Weight (g)
+                                                </Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={[
+                                                    styles.unitTypeButton,
+                                                    unitType === 'weight_kg' && styles.unitTypeButtonActive
+                                                ]}
+                                                onPress={() => setUnitType('weight_kg')}
+                                                activeOpacity={0.7}
+                                            >
+                                                <Text
+                                                    variant="bodySmall"
+                                                    semibold
+                                                    style={[
+                                                        styles.unitTypeButtonText,
+                                                        unitType === 'weight_kg' && styles.unitTypeButtonTextActive
+                                                    ]}
+                                                >
+                                                    Weight (kg)
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+
                                 </View>
                             </View>
-                        </View>
+                        </TouchableWithoutFeedback>
                     </ScrollView>
 
                     {/* Fixed Footer with Action Buttons */}
@@ -308,8 +312,8 @@ export function AddProductModal({ visible, onClose, onAdd, existingCategories = 
                         </Button>
                     </View>
                 </View>
-            </View>
-        </Modal>
+            </View >
+        </Modal >
     );
 }
 

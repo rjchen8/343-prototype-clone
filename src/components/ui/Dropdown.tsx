@@ -21,9 +21,11 @@ interface DropdownProps {
 export function Dropdown({ label, value, options, onValueChange }: DropdownProps) {
     return (
         <View style={styles.container}>
-            <Text variant="bodySmall" semibold style={styles.label}>
-                {label}
-            </Text>
+            {label && (
+                <Text variant="bodySmall" semibold style={styles.label}>
+                    {label}
+                </Text>
+            )}
 
             <RNDropdown
                 data={options}
